@@ -32,17 +32,13 @@ Please cite this paper if you use our code or data.
 The download script is based on the [methodology](https://github.com/deepmind/rc-data/) proposed in [Hermann et al. (2015)](http://arxiv.org/abs/1506.03340) from Google DeepMind. 
 
 ### Prerequisites
-Python 2.7, wget, libxml2, libxslt, python-dev and virtualenv. libxml2 must be version 2.9.1. You can install libxslt from here: http://xmlsoft.org/libxslt/downloads.html
-
-### Activating Virtual Environment
+Python 3
+ 
+### Activating Virtual Environment and installing dependencies
 ```
-sudo pip install virtualenv
-sudo apt-get install python-dev
-virtualenv venv
+python3 -m venv venv
 source venv/bin/activate
-wget https://github.com/deepmind/rc-data/raw/master/requirements.txt
 pip install -r requirements.txt
-sudo apt-get install libxml2-dev libxslt-dev
 ```
 
 ### Download URLs

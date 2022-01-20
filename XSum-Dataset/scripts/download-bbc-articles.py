@@ -20,7 +20,6 @@ import argparse
 from collections import namedtuple
 import hashlib
 from itertools import chain
-from itertools import izip
 from itertools import repeat
 import math
 from multiprocessing.pool import Pool
@@ -53,7 +52,7 @@ class ProgressBar(object):
     self.PrintProgress(self.curr)
 
     if self.curr == self.total:
-      print ''
+      print ('')
 
   def PrintProgress(self, value):
     self.stream.write('\b' * self.last_len)
@@ -117,7 +116,7 @@ def DownloadUrl(url, downloads_dir, timestamp_exactness, max_attempts=5, timeout
       if req.status_code == requests.codes.ok:
         content = req.text.encode(req.encoding)
         with open(downloads_dir+"/"+htmlfileid, 'w') as f:
-          f.write(content)
+          f.write(content.decode("utf-8"))
         return content
       elif (req.status_code in [301, 302, 404, 503]
             and attempts == max_attempts - 1):
@@ -175,24 +174,24 @@ def DownloadMode(urls_file, missing_urls_file, downloads_dir, request_parallelis
     timestamp_exactness: Time stamp exactness (year, month, date, hr, minute and second)
   """
     
-  print 'Downloading URLs from the %s file:' % urls_file
+  print ('Downloading URLs from the %s file:' % urls_file)
   urls_full = ReadUrls(urls_file)
   
   urls_valid_todownload = urls_full[:]
   missing_urls_filename = missing_urls_file
   if os.path.exists(missing_urls_filename):
-    print 'Only downloading missing URLs'
+    print ('Only downloading missing URLs')
     urls_valid_todownload = list(set(urls_full).intersection(ReadUrls(missing_urls_filename)))
 
   collected_urls = []
   missing_urls = []
   urls_left_todownload = urls_valid_todownload[:]
-  print 'urls left to download: ' +  str(len(urls_left_todownload))
+  print ('urls left to download: ' +  str(len(urls_left_todownload)))
   while(len(urls_left_todownload) != 0):
 
     p = ThreadPool(request_parallelism)
     
-    results = p.imap_unordered(DownloadMapper, izip(urls_left_todownload, repeat(downloads_dir), repeat(timestamp_exactness)))
+    results = p.imap_unordered(DownloadMapper, zip(urls_left_todownload, repeat(downloads_dir), repeat(timestamp_exactness)))
     
     progress_bar = ProgressBar(len(urls_left_todownload))
 
@@ -205,10 +204,10 @@ def DownloadMode(urls_file, missing_urls_file, downloads_dir, request_parallelis
 
         progress_bar.Increment()
     except KeyboardInterrupt:
-      print 'Interrupted by user'
+      print ('Interrupted by user')
       break
     except TypeError:
-      print 'TypeError (probably a robot.txt case): '+url
+      print ('TypeError (probably a robot.txt case): '+url)
       missing_urls.append(url)
       p.terminate()
     # except IOError:
@@ -217,10 +216,10 @@ def DownloadMode(urls_file, missing_urls_file, downloads_dir, request_parallelis
     #  p.terminate()
 
     # Reset the urls_left_todownload for the rest of not-tried urls
-    print 'Reset urls_left_todownload - (collected_urls, missing_urls)'
+    print ('Reset urls_left_todownload - (collected_urls, missing_urls)')
     urls_toignore = collected_urls[:] +  missing_urls[:]
     urls_left_todownload = list(set(urls_left_todownload) - set(urls_toignore))
-    print 'urls left to download: ' +  str(len(urls_left_todownload))
+    print ('urls left to download: ' +  str(len(urls_left_todownload)))
 
   # Write all the final missing urls
   missing_urls = []
@@ -231,7 +230,7 @@ def DownloadMode(urls_file, missing_urls_file, downloads_dir, request_parallelis
   if missing_urls:
     print ('%d URLs couldn\'t be downloaded, see %s.'
            % (len(missing_urls), missing_urls_file))
-    print 'Try and run the command again to download the missing URLs.'
+    print ('Try and run the command again to download the missing URLs.')
 
 def main():
   parser = argparse.ArgumentParser(description='Download BBC News Articles')
@@ -243,7 +242,7 @@ def main():
   urls_file_to_download = "XSum-WebArxiveUrls.txt"
   missing_urls_file = "XSum-WebArxiveUrls.missing.txt" 
   downloads_dir = "./xsum-raw-downloads"
-  print 'Creating the download directory.'
+  print ('Creating the download directory.')
   os.system("mkdir -p "+downloads_dir)
   
   
