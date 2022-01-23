@@ -56,6 +56,9 @@ if __name__ == "__main__":
       doc_sentences = []
       doc_sentlemmas = []
       # process xml file
+      if not os.path.isfile(stanfordfile):
+        continue
+      print("processing", stanfordfile)
       tree = ET.parse(stanfordfile)
       root = tree.getroot()
       for sentences in root.iter('sentences'):
@@ -79,13 +82,13 @@ if __name__ == "__main__":
       
       allcovered = 0
       for doc_sent, doc_sentlemma in zip(doc_sentences, doc_sentlemmas):
-        if "-LSB- XSUM -RSB- URL -LSB- XSUM -RSB-" in doc_sent:
+        if "-LSB- XSUM -RSB- URL -LSB- XSUM -RSB-" in doc_sent or "[ XSUM ] URL [ XSUM ]" in doc_sent:
           modeFlag = "URL"
           allcovered += 1
-        elif "-LSB- XSUM -RSB- FIRST-SENTENCE -LSB- XSUM -RSB-" in doc_sent:
+        elif "-LSB- XSUM -RSB- FIRST-SENTENCE -LSB- XSUM -RSB-" in doc_sent or "[ XSUM ] INTRODUCTION [ XSUM ]" in doc_sent:
           modeFlag = "INTRODUCTION"
           allcovered += 1
-        elif "-LSB- XSUM -RSB- RESTBODY -LSB- XSUM -RSB-" in doc_sent:
+        elif "-LSB- XSUM -RSB- RESTBODY -LSB- XSUM -RSB-" in doc_sent or "[ XSUM ] RESTBODY [ XSUM ]" in doc_sent:
           modeFlag = "RestBody"
           allcovered += 1
         else:

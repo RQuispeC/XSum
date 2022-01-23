@@ -41,7 +41,8 @@ class ParseHtml:
   def __init__(self, story, corpus):
     self.story = story
     self.corpus = corpus
-    self.parser = html.HTMLParser(encoding=chardet.detect(self.story.html)['encoding'])
+    #sself.parser = html.HTMLParser(encoding=chardet.detect(self.story.html)['encoding'])
+    self.parser = html.HTMLParser()
     self.tree = html.document_fromstring(self.story.html, parser=self.parser)
     
     # Elements to delete.
@@ -93,10 +94,10 @@ class ParseHtml:
     """
     xpaths = map(self.tree.xpath, selector)
     elements = list(chain.from_iterable(xpaths))
-    paragraphs = [e.text_content().encode('utf-8') for e in elements]
+    #paragraphs = [e.text_content().encode('utf-8') for e in elements]
+    paragraphs = [e.text_content() for e in elements]
     paragraphs = map(str.strip, paragraphs)
     paragraphs = [s for s in paragraphs if s and not str.isspace(s)]
-    
     return paragraphs
 
   def getstory_title(self):
@@ -132,7 +133,6 @@ def GenerateMapper(t):
     A list of title, introduction and rest of the document.
   """
   context_token_limit = 2000
-
   url, corpus, story_html = t
   
   if not story_html:
@@ -195,7 +195,10 @@ if __name__ == "__main__":
     htmldata = open(downloaded_file).read()
     
     # url, corpus, htmldata
-    story_title, story_introduction, story_restcontent = GenerateMapper((webarxivid, "bbc", htmldata))
+    uch = GenerateMapper((webarxivid, "bbc", htmldata))
+    if uch == None:
+      continue
+    story_title, story_introduction, story_restcontent = uch
 
     if not ((len(story_title.title) == 1) and (len(story_introduction.title) == 1) and (len(story_restcontent.restcontent) != 0)):
       failed_id_file.write(bbcid+"\t"+str(len(story_title.title))+"\t"+str(len(story_introduction.title))+
