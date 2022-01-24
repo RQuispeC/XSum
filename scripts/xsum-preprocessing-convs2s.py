@@ -50,7 +50,7 @@ def get_data_from_file(story_file):
 def write_to_bin(data_type, out_file_rb, out_file_fs):
   
   """Reads all the bbids and write them to out file."""
-  print "Making text file for bibids listed as %s..." % data_type
+  print( "Making text file for bibids listed as %s..." % data_type)
   
   bbcids = train_dev_test_dict[data_type]
   num_stories = len(bbcids)
@@ -61,11 +61,13 @@ def write_to_bin(data_type, out_file_rb, out_file_fs):
   for idx,s in enumerate(bbcids):
     
     if idx % 1000 == 0:
-      print "Writing story %i of %i; %.2f percent done" % (idx, num_stories, float(idx)*100.0/float(num_stories))
+      print( "Writing story %i of %i; %.2f percent done" % (idx, num_stories, float(idx)*100.0/float(num_stories)))
 
     # Files
     restbodyfile = bbc_tokenized_stories_dir + "/document/" + s + ".document"
     firstsentencefile = bbc_tokenized_stories_dir + "/summary/" + s + ".summary"
+    if not os.path.isfile(restbodyfile) or not os.path.isfile(firstsentencefile):
+      continue
     
             
     # Get the strings to write to .bin file
@@ -79,7 +81,7 @@ def write_to_bin(data_type, out_file_rb, out_file_fs):
   rb_foutput.close()
   fs_foutput.close()
     
-  print "Finished writing file %s, %s\n" %(out_file_rb, out_file_fs)
+  print( "Finished writing file %s, %s\n" %(out_file_rb, out_file_fs))
 
 if __name__ == '__main__':
 
